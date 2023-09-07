@@ -1,5 +1,5 @@
 #!/bin/bash
-#XPanel Alireza
+#HighVPN RmnJL
 echo "Install Dropbear ..."
 apt-get -y remove dropbear 1> /dev/null 2> /dev/null
 apt-get -y purge dropbear 1> /dev/null 2> /dev/null
@@ -24,7 +24,7 @@ service dropbear start
 service dropbear restart 
 curl -o /var/www/html/dropbear.sh https://raw.githubusercontent.com/RmnJL/dropbear/main/dropbear.sh
 chmod +x /var/www/html/dropbear.sh
-sed -i "s/PORT_DROPBEAR=.*/PORT_DROPBEAR=$port/g" /var/www/html/app/.env
+sed -i "s/PORT_DROPBEAR=.*/PORT_DROPBEAR=$port/g" /var/www/html/panel/.env
 (crontab -l | grep . ; echo -e "* * * * * /var/www/html/dropbear.sh") | crontab -
 echo "Port Connection $port"
 
