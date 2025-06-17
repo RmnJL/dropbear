@@ -1,4 +1,5 @@
 #!/bin/bash
+<<<<<<< HEAD
 #HighVPN RmnJL
 json_output="["
 
@@ -44,3 +45,37 @@ done
 json_output="${json_output%,}"
 json_output+="]"
 echo "$json_output" > /var/www/html/panel/storage/dropbear.json
+=======
+# HighVPN RmnJL - نسخه بهبود یافته و پایدار
+set -euo pipefail
+
+json_output="["
+
+# استخراج پورت‌های فعال dropbear
+ports=$(ss -ltnp 2>/dev/null | grep dropbear | awk '{print $4}' | awk -F: '{print $NF}' | sort -u)
+log="/var/log/auth.log"
+[ -f /var/log/secure ] && log="/var/log/secure"
+loginsukses="Password auth succeeded"
+
+for port in $ports; do
+    pids=$(pgrep -f "dropbear.*$port")
+    for pid in $pids; do
+        # استخراج آخرین ورود موفق برای این PID
+        login=$(grep "$pid" "$log" | grep "$loginsukses" | tail -n 1)
+        if [ -n "$login" ]; then
+            user=$(echo "$login" | awk '{print $10}')
+            waktu=$(echo "$login" | awk '{print $2 "-" $1, $3}')
+            PID="$pid"
+            # ساخت JSON ایمن
+            json_item="{\"user\": \"$user\", \"PID\": \"$PID\", \"waktu\": \"$waktu\"}"
+            json_output+="$json_item,"
+        fi
+    done
+done
+json_output="${json_output%,}]"
+
+# اطمینان از وجود دایرکتوری خروجی
+outdir="/var/www/html/panel/storage"
+mkdir -p "$outdir"
+echo "$json_output" > "$outdir/dropbear.json"
+>>>>>>> f103409 (Initial stable and improved version upload)
